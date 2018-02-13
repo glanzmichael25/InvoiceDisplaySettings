@@ -6,11 +6,13 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.NumberFormat;
 
-public class MainActivity extends Activity implements TextView.OnEditorActionListener {
+public class MainActivity extends Activity implements TextView.OnEditorActionListener, SeekBar.OnSeekBarChangeListener {
 
     //instance variables
 
@@ -20,6 +22,8 @@ public class MainActivity extends Activity implements TextView.OnEditorActionLis
     private TextView totalAmountTextView;
     private String subtotalString;
     private SharedPreferences savedValues;
+    private SeekBar seekBar;
+    private float discountPercent = 0;
 
 
     @Override
@@ -32,7 +36,9 @@ public class MainActivity extends Activity implements TextView.OnEditorActionLis
         percentTextView = findViewById(R.id.percentTextView);
         discountAmountTextView =  findViewById(R.id.discountAmountTextView);
         totalAmountTextView =  findViewById(R.id.totalAmountTextView);
+        seekBar = (SeekBar) findViewById(R.id.seekBar);
         inputeditText.setOnEditorActionListener(this);
+        seekBar.setOnSeekBarChangeListener(this);
         //get shared preferences object
         savedValues = getSharedPreferences("SavedValues", MODE_PRIVATE);
     }
@@ -76,14 +82,14 @@ public class MainActivity extends Activity implements TextView.OnEditorActionLis
         }
 
         //get the discount percent
-        float discountPercent = 0;
-        if (subtotal >= 200) {
-            discountPercent = .2f;
-        } else if(subtotal >= 100){
-            discountPercent = .1f;
-        }else{
-            discountPercent = 0;
-        }
+        //float discountPercent = 0;
+        //if (subtotal >= 200) {
+        //    discountPercent = .2f;
+        //} else if(subtotal >= 100){
+        //    discountPercent = .1f;
+        //}else{
+        //    discountPercent = 0;
+        //}
 
         //calculate the discount
         float discountAmount = subtotal * discountPercent;
@@ -97,5 +103,21 @@ public class MainActivity extends Activity implements TextView.OnEditorActionLis
         NumberFormat currency = NumberFormat.getCurrencyInstance();
         discountAmountTextView.setText(currency.format(discountAmount));
         totalAmountTextView.setText(currency.format(total));
+    }
+
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
+        Toast.makeText(getApplicationContext(), "Seekbar Progress: " + progress, Toast.LENGTH_SHORT).show();
+        discountPercent = (float) (progress * 0.01);
+    }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+        Toast.makeText(getApplicationContext(), "Seekbar Started: ", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+
     }
 }
